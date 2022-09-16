@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.16...3.25)
 
+project(obs-browser)
+
+# Add the required CMake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
 option(ENABLE_BROWSER "Enable browser source plugin (required Chromium Embedded Framework)" OFF)
 
 if(NOT ENABLE_BROWSER)
