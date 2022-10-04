@@ -335,7 +335,7 @@ function(setup_obs_modules target)
     TARGET ${target}
     POST_BUILD
     COMMAND
-      "${CMAKE_COMMAND}" --install .. --config $<CONFIG> --prefix
+      "${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}" --config $<CONFIG> --prefix
       $<TARGET_BUNDLE_CONTENT_DIR:${target}> --component obs_plugin_dev >
       /dev/null
     COMMENT "Installing OBS plugins for development"

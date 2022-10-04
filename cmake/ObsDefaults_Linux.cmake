@@ -111,8 +111,10 @@ macro(setup_obs_project)
   set(CPACK_PACKAGE_VENDOR "${OBS_WEBSITE}")
   set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${OBS_COMPANY_NAME}")
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${OBS_COMMENTS}")
-  set(CPACK_RESOURCE_FILE_LICENSE
-      "${CMAKE_SOURCE_DIR}/UI/data/license/gplv2.txt")
+  # Unused for this plugin specifically.
+  # TODO: Add the license file to the repo and ship it properly
+  #set(CPACK_RESOURCE_FILE_LICENSE
+  #    "${CMAKE_SOURCE_DIR}/UI/data/license/gplv2.txt")
   set(CPACK_PACKAGE_VERSION "${OBS_VERSION_CANONICAL}-${OBS_BUILD_NUMBER}")
   set(CPACK_STRIP_FILES "bin/obs" "bin/obs-ffmpeg-mux")
   set(CPACK_SOURCE_STRIP_FILES "")
