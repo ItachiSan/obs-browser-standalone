@@ -1,3 +1,38 @@
+# OBS Browser - Packageable edition
+
+This repository is a fork of the official OBS Browser plugin with the intention of modifying the
+code just the bare minimum in order to make the plugin packageable everywhere.
+
+## How to build
+
+I managed to get a working Archlinux package via something like:
+```
+$ cd codefolder
+
+$ cmake -B build \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D ENABLE_UI=ON \
+    -D ENABLE_BROWSER=ON \
+    -D CEF_ROOT_DIR="$srcdir/cef_binary_${_cef_version}_linux64" \
+    -D CMAKE_INSTALL_PREFIX=/usr
+
+$ make -C build  # For speed, add: -j `nproc`
+
+$ make -C build DESTDIR=PACKAGE_FOLDER install
+```
+
+Feel free to ask for help or suggest stuff, this is very experimental.
+
+I was able to have a browser source in my official Arch OBS though :smile:
+
+## License
+Code is under the same license of OBS Studio, GPLv2.
+There is no license file in this project but it seems the license should apply also here.
+Please refer to the official OBS project.
+
+
+# Official README
+
 # obs-browser
 
 obs-browser introduces a cross-platform Browser Source, powered by CEF ([Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef/src/master/README.md)), to OBS Studio. A Browser Source allows the user to integrate web-based overlays into their scenes, with complete access to modern web APIs.

@@ -57,7 +57,7 @@ function(setup_binary_target target)
     TARGET ${target}
     POST_BUILD
     COMMAND
-      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install ..
+      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}"
       --config $<CONFIG> --prefix ${OBS_OUTPUT_DIR}/$<CONFIG> --component
       obs_${target} > "$<IF:$<PLATFORM_ID:Windows>,nul,/dev/null>"
     COMMENT "Installing OBS rundir"
@@ -91,7 +91,7 @@ function(setup_plugin_target target)
     TARGET ${target}
     POST_BUILD
     COMMAND
-      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install ..
+      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}"
       --config $<CONFIG> --prefix ${OBS_OUTPUT_DIR}/$<CONFIG> --component
       obs_${target} > "$<IF:$<PLATFORM_ID:Windows>,nul,/dev/null>"
     COMMENT "Installing ${target} to OBS rundir"
@@ -131,7 +131,7 @@ function(setup_script_plugin_target target)
     TARGET ${target}
     POST_BUILD
     COMMAND
-      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install ..
+    "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}"
       --config $<CONFIG> --prefix ${OBS_OUTPUT_DIR}/$<CONFIG> --component
       obs_${target} > "$<IF:$<PLATFORM_ID:Windows>,nul,/dev/null>"
     COMMENT "Installing ${target} to OBS rundir"
@@ -201,7 +201,7 @@ function(setup_obs_app target)
     TARGET ${target}
     POST_BUILD
     COMMAND
-      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install ..
+      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}"
       --config $<CONFIG> --prefix ${OBS_OUTPUT_DIR}/$<CONFIG> --component
       obs_rundir > "$<IF:$<PLATFORM_ID:Windows>,nul,/dev/null>"
     COMMENT "Installing OBS rundir"
@@ -540,7 +540,7 @@ function(_install_obs_datatarget target destination)
     TARGET ${target}
     POST_BUILD
     COMMAND
-      "${CMAKE_COMMAND}" -E env DESTDIR= "${CMAKE_COMMAND}" --install ..
+      "${CMAKE_COMMAND}" -E env DESTDIR="${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}"
       --config $<CONFIG> --prefix ${OBS_OUTPUT_DIR}/$<CONFIG> --component
       obs_${target} > "$<IF:$<PLATFORM_ID:Windows>,nul,/dev/null>"
     COMMENT "Installing ${target} to OBS rundir"

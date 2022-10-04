@@ -6,6 +6,12 @@ project(obs-browser)
 # Add the required CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+# Include required helpers
+include(ObsHelpers)
+
+# Prepare required folders and such
+setup_obs_project()
+
 option(
   ENABLE_BROWSER
   "Enable building OBS with browser source plugin (required Chromium Embedded Framework)"
@@ -46,6 +52,10 @@ if(NOT TARGET CEF::Wrapper)
       "OBS:    -        Unable to find CEF Libraries - set CEF_ROOT_DIR or configure with ENABLE_BROWSER=OFF"
   )
 endif()
+
+# Find the required OBS libraries that normally are within the project
+find_package(libobs REQUIRED)
+find_package(obs-frontend-api REQUIRED)
 
 add_library(obs-browser MODULE)
 add_library(OBS::browser ALIAS obs-browser)
@@ -93,7 +103,7 @@ target_sources(
 target_include_directories(obs-browser PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps
                                                ${CMAKE_BINARY_DIR}/config)
 
-target_link_libraries(obs-browser PRIVATE OBS::libobs OBS::frontend-api)
+target_link_libraries(obs-browser PRIVATE OBS::libobs OBS::obs-frontend-api)
 
 target_compile_features(obs-browser PRIVATE cxx_std_17)
 
@@ -310,3 +320,6 @@ set_target_properties(obs-browser PROPERTIES FOLDER "plugins/obs-browser" PREFIX
                                                                           "")
 
 setup_plugin_target(obs-browser)
+
+# Add required CEF files to the final package
+setup_target_browser(obs-browser)
