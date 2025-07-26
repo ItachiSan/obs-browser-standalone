@@ -105,6 +105,59 @@ function(set_target_properties_obs target)
           "${OBS_OUTPUT_DIR}/$<CONFIG>/${OBS_LIBRARY_DESTINATION}"
         COMMENT "Create symlink for legacy ${target}"
       )
+    elseif(${target} STREQUAL obs-browser)
+      message(DEBUG "Add Chromium Embedded Framework to project for obs-browser plugin...")
+      if(TARGET CEF::Library)
+        get_target_property(imported_location CEF::Library IMPORTED_LOCATION_RELEASE)
+
+        if(imported_location)
+          cmake_path(GET imported_location PARENT_PATH cef_location)
+          cmake_path(GET cef_location PARENT_PATH cef_root_location)
+          add_custom_command(
+            TARGET ${target}
+            POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "${OBS_OUTPUT_DIR}/$<CONFIG>/${OBS_PLUGIN_DESTINATION}/"
+            COMMAND
+              "${CMAKE_COMMAND}" -E copy_if_different "${imported_location}" "${cef_location}/chrome-sandbox"
+              "${cef_location}/libEGL.so" "${cef_location}/libGLESv2.so" "${cef_location}/libvk_swiftshader.so"
+              "${cef_location}/libvulkan.so.1" "${cef_location}/v8_context_snapshot.bin"
+              "${cef_location}/vk_swiftshader_icd.json" "${OBS_OUTPUT_DIR}/$<CONFIG>/${OBS_PLUGIN_DESTINATION}/"
+            COMMAND
+              "${CMAKE_COMMAND}" -E copy_if_different "${cef_root_location}/Resources/chrome_100_percent.pak"
+              "${cef_root_location}/Resources/chrome_200_percent.pak" "${cef_root_location}/Resources/icudtl.dat"
+              "${cef_root_location}/Resources/resources.pak" "${OBS_OUTPUT_DIR}/$<CONFIG>/${OBS_PLUGIN_DESTINATION}/"
+            COMMAND
+              "${CMAKE_COMMAND}" -E copy_directory "${cef_root_location}/Resources/locales"
+              "${OBS_OUTPUT_DIR}/$<CONFIG>/${OBS_PLUGIN_DESTINATION}/locales"
+            COMMENT "Add Chromium Embedded Framwork to library directory"
+          )
+
+          install(
+            FILES
+              "${imported_location}"
+              "${cef_location}/chrome-sandbox"
+              "${cef_location}/libEGL.so"
+              "${cef_location}/libGLESv2.so"
+              "${cef_location}/libvk_swiftshader.so"
+              "${cef_location}/libvulkan.so.1"
+              "${cef_location}/v8_context_snapshot.bin"
+              "${cef_location}/vk_swiftshader_icd.json"
+              "${cef_root_location}/Resources/chrome_100_percent.pak"
+              "${cef_root_location}/Resources/chrome_200_percent.pak"
+              "${cef_root_location}/Resources/icudtl.dat"
+              "${cef_root_location}/Resources/resources.pak"
+            DESTINATION "${OBS_PLUGIN_DESTINATION}"
+            COMPONENT Runtime
+          )
+
+          install(
+            DIRECTORY "${cef_root_location}/Resources/locales"
+            DESTINATION "${OBS_PLUGIN_DESTINATION}"
+            USE_SOURCE_PERMISSIONS
+            COMPONENT Runtime
+          )
+        endif()
+      endif()
     endif()
   elseif(target_type STREQUAL MODULE_LIBRARY)
     if(target STREQUAL obs-browser)
