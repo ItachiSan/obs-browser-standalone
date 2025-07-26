@@ -1,22 +1,14 @@
 cmake_minimum_required(VERSION 3.16...3.25)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers")
+
 project(obs-browser)
 
-# Add the required CMake modules
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-
-# Include required helpers
-include(ObsHelpers)
-
-# Prepare required folders and such
-setup_obs_project()
-
-option(ENABLE_BROWSER "Enable browser source plugin (required Chromium Embedded Framework)" OFF)
+option(ENABLE_BROWSER "Enable browser source plugin (required Chromium Embedded Framework)" ON)
 
 if(NOT ENABLE_BROWSER)
   target_disable(obs-browser)
   target_disable_feature(obs-browser "Browser sources are not enabled by default (set CEF_ROOT_DIR and ENABLE_BROWSER)")
-
   return()
 endif()
 
@@ -26,8 +18,12 @@ find_package(nlohmann_json 3.11 REQUIRED)
 # Find the required OBS libraries that normally are within the project
 find_package(libobs REQUIRED)
 find_package(obs-frontend-api REQUIRED)
+find_package(obs-websocket-api REQUIRED)
 
-add_library(obs-browser MODULE)
+# Add source and build directory to include path for proper header detection
+set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
+
+add_library(obs-browser SHARED)
 add_library(OBS::browser ALIAS obs-browser)
 
 option(ENABLE_BROWSER_PANELS "Enable Qt web browser panel support" ON)
@@ -57,10 +53,10 @@ target_sources(
 
 target_include_directories(obs-browser PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/deps")
 
-target_link_libraries(obs-browser PRIVATE OBS::libobs OBS::obs-frontend-api)
-
 target_compile_features(obs-browser PRIVATE cxx_std_17)
-target_link_libraries(obs-browser PRIVATE OBS::libobs OBS::frontend-api OBS::websocket-api nlohmann_json::nlohmann_json)
+target_link_libraries(obs-browser PRIVATE OBS::libobs OBS::obs-frontend-api OBS::obs-websocket-api nlohmann_json::nlohmann_json)
+
+include(ObsHelpers)
 
 if(OS_WINDOWS)
   include(cmake/os-windows.cmake)
@@ -74,9 +70,4 @@ if(ENABLE_BROWSER_PANELS)
   include(cmake/feature-panels.cmake)
 endif()
 
-set_target_properties(obs-browser PROPERTIES FOLDER plugins/obs-browser PREFIX "")
-
-setup_plugin_target(obs-browser)
-
-# Add required CEF files to the final package
-setup_target_browser(obs-browser)
+set_target_properties_obs(obs-browser PROPERTIES FOLDER plugins/obs-browser PREFIX "")
