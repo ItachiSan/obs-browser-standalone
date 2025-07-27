@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16...3.25)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers")
+project(obs-browser-standalone)
 
-project(obs-browser)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers")
 
 option(ENABLE_BROWSER "Enable browser source plugin (required Chromium Embedded Framework)" ON)
 
@@ -10,6 +10,22 @@ if(NOT ENABLE_BROWSER)
   target_disable(obs-browser)
   target_disable_feature(obs-browser "Browser sources are not enabled by default (set CEF_ROOT_DIR and ENABLE_BROWSER)")
   return()
+endif()
+
+# Retrieve their blob CEF. FetchContent does some weird stuff so do things by hand.
+# Source for URL and hash: https://github.com/obsproject/obs-studio/blob/master/build-aux/modules/99-cef.json
+if(NOT CEF_ROOT_DIR)
+  message("-- [cef] CEF_ROOT_DIR not defined. Retrieving CEF blob...")
+  file(DOWNLOAD
+      "https://cdn-fastly.obsproject.com/downloads/cef_binary_6533_linux_x86_64_v5.tar.xz"
+      "${CMAKE_BINARY_DIR}/cef_binary.tar.xz"
+      SHOW_PROGRESS
+      EXPECTED_HASH SHA256=df38ef6d8078895953d224a58dd811b83110b4f8644c5cd2b6246d04b0023ee6)
+  message("-- [cef] Extracting CEF tarball...")
+  file(ARCHIVE_EXTRACT
+       INPUT "${CMAKE_BINARY_DIR}/cef_binary.tar.xz")
+  set(CEF_ROOT_DIR "${CMAKE_BINARY_DIR}/cef_binary_6533_linux_x86_64")
+  message("-- [cef] New CEF_ROOT_DIR: ${CEF_ROOT_DIR}")
 endif()
 
 find_package(CEF 95 REQUIRED)

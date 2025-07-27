@@ -5,20 +5,24 @@ code just the bare minimum in order to make the plugin packageable everywhere.
 
 ## How to build
 
-I managed to get a working Archlinux package via something like:
+First fetch the code as usual:
+```sh
+$ git clone https://github.com/ItachiSan/obs-browser-standalone
+$ cd obs-browser-standalone
 ```
-$ cd codefolder
 
-$ cmake -B build \
-    -D CMAKE_BUILD_TYPE=Release \
-    -D ENABLE_UI=ON \
-    -D ENABLE_BROWSER=ON \
-    -D CEF_ROOT_DIR="$srcdir/cef_binary_${_cef_version}_linux64" \
-    -D CMAKE_INSTALL_PREFIX=/usr
+For a local build, this will suffice:
+```sh
+$ cmake -S . -B build
+$ cmake --build build  # For speed, add: -j `nproc`
+$ cmake --install build
+```
 
-$ make -C build  # For speed, add: -j `nproc`
-
-$ make -C build DESTDIR=PACKAGE_FOLDER install
+For package maintainers, you want to do this instead:
+```sh
+$ cmake -S . -B build -D CMAKE_INSTALL_PREFIX=/usr  # Fix the installation prefix
+$ cmake --build build -j `nproc`
+$ DESTDIR=PACKAGE_DIR cmake --install build
 ```
 
 Feel free to ask for help or suggest stuff, this is very experimental.
@@ -30,8 +34,9 @@ Code is under the same license of OBS Studio, GPLv2.
 There is no license file in this project but it seems the license should apply also here.
 Please refer to the official OBS project.
 
+*Official README  below*
 
-# Official README
+---
 
 # obs-browser
 

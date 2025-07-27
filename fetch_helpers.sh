@@ -1,5 +1,6 @@
 #!/bin/sh
 # Dumb script for fetching all the required CMake modules from the main project.
+# Don't use for now!
 
 OBS_VERSION="31.1.1"
 
